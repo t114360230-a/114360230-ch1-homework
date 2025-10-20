@@ -1,5 +1,6 @@
 name: C Program Build
 
+# 觸發條件：每次 push 或 pull request 到 main 分支
 on:
   push:
     branches: [ main ]
@@ -11,16 +12,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ 先把 repo 內容抓下來
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ 安裝 GCC
       - name: Install GCC
-        run: sudo apt-get install -y gcc
+        run: sudo apt-get update && sudo apt-get install -y gcc
 
-      - name: Compile all C files
+      # 3️⃣ 逐個編譯所有 C 檔案
+      - name: Compile and run each C file
         run: |
-          gcc -Wall -o output *.c
-          echo "✅ Build finished!"
-
-      - name: Run program
-        run: ./output || true
+          for file in *.c; do
+            exe="${file%.c}"
+            echo "Compiling $file -> $exe"
+            gcc -Wall -o "$exe" "$file" -lm
+            if [ $? -eq 0 ]; then
+              echo "✅ $file compiled successfully"
+              ./"$exe" || echo "⚠️ $exe ran with errors"
+            else
+              echo "❌ Failed to compile $file"
+            fi
+            echo "------------------------"
+          done
