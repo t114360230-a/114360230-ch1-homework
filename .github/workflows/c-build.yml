@@ -1,0 +1,26 @@
+name: C Program Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install GCC
+        run: sudo apt-get install -y gcc
+
+      - name: Compile all C files
+        run: |
+          gcc -Wall -o output *.c
+          echo "✅ Build finished!"
+
+      - name: Run program
+        run: ./output || true
