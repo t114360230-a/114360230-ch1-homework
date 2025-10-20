@@ -22,13 +22,12 @@ jobs:
       # 3️⃣ 編譯並執行每個 C 檔案
       - name: Compile and run each C file
         run: |
-          set -e
           for file in *.c; do
             exe="${file%.c}"
             echo "Compiling $file -> $exe"
             gcc -Wall -o "$exe" "$file" -lm
-            echo "✅ $file compiled successfully"
             echo "Running $exe..."
-            ./"$exe" || echo "⚠️ $exe ran with errors"
+            ./"$exe" || echo "$exe ran with errors"
             echo "------------------------"
           done
+
